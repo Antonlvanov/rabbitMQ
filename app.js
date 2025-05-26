@@ -1,0 +1,1 @@
+const amqp = require('amqplib');async function send() {  const conn = await amqp.connect('amqp://localhost');  const channel = await conn.createChannel();  const queue = 'myQueue';  await channel.assertQueue(queue);  channel.sendToQueue(queue, Buffer.from('Tere RabbitMQ!'));  console.log('Sõnum saadetud!');}send();

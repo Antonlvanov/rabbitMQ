@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RabbitMQ Message Sender</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+    input, button {
+      padding: 10px;
+      margin: 5px;
+      font-size: 16px;
+    }
+    #status {
+      margin-top: 10px;
+      color: green;
+    }
+    #error {
+      margin-top: 10px;
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <h1>Send Message to RabbitMQ</h1>
+  <input type="text" id="messageInput" placeholder="Enter your message" />
+  <button onclick="sendMessage()">Send</button>
+  <div id="status"></div>
+  <div id="error"></div>
+
+  <script>
+    async function sendMessage() {
+      const messageInput = document.getElementById('messageInput').value;
+      const statusDiv = document.getElementById('status');
+      const errorDiv = document.getElementById('error');
+
+      // Clear previous messages
+      statusDiv.textContent = '';
+      errorDiv.textContent = '';
+
+      if (!messageInput) {
+        errorDiv.textContent = 'Please enter a message';
+        return;
+      }
+
+      try {
+        const response = await fetch('/send', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: messageInput })
+        });
+        const result = await response.json();
+
+        if (response.ok) {
+          statusDiv.textContent = result.status;
+          document.getElementById('messageInput').value = ''; // Clear input
+        } else {
+          errorDiv.textContent = result.error;
+        }
+      } catch (error) {
+        errorDiv.textContent = 'Error sending message: ' + error.message;
+      }
+    }
+  </script>
+</body>
+</html>
